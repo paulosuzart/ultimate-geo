@@ -21,6 +21,7 @@
 	(.getGeocoderRequest 
      (doto (new GeocoderRequestBuilder)
       ;(.setLocation (LatLng. (:lat address) (:lng address)))
+
       (.setAddress (format "%s, %s, %s - %s, brasil" (:street address) (:number address) (:locality address) (:uf address)))
       (.setLanguage "pt_BR"))))
 
@@ -98,13 +99,16 @@
              (cli args ["-i" "--in-fields" "A map that describes how to thread each parsed field: [_ :city :name setreet _ _ :id]." :parse-fn #(read-string %)]
                        ["-o" "--out-format" "A map that will be written to a new csv file appended with lat and lng: [\"%s,%s\" [:id :lat :lng]" :parse-fn #(read-string %)]
                        ["-d" "--delimiter" "A csv delimiter. Defaults to ," :default \, :parse-fn #(first (read-string %))]
+                       ["-h" "--help" "Show this help." :default false :flag true]
                        ["-t" "--target" "Target file." :default "./geo-target"]
                        ["-s" "--source" "Target file." :default "./geo-source"]
                   )]
-       (println opts)
+      (when (:help opts)
+        (println banner)
+        (System/exit 0))
       (->> (parse-csv (reader (:source opts)) :delimiter (:delimiter opts))
            (pmap #(to-geodata (:in-fields opts) %))
            (pmap #(geocode (goo-gcf gc) %))
            (pmap #(gen-result (outputer (:out-format opts)) %))
-           (write-output (:target opts))))
+           (write-output (:target opts)))["-h" "--help" "Show this help." :default false :flag true])
    (System/exit 0))
