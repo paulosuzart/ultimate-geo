@@ -21,12 +21,18 @@ Run it with `lein run -h` and you'll see:
 
 Suppose you have the given csv file:
 
-   Shopping Ibirapuera, Av. Ibirapuera, 3103, São Paulo, Moema
-   Shopping Barra, Av. Centenário, 2992, Salvador, Chame-Chame
+    Shopping Ibirapuera, Av. Ibirapuera, 3103, São Paulo, Moema
+    Shopping Barra, Av. Centenário, 2992, Salvador, Chame-Chame
 
 Just call the ultimate geocoder like this:
 
-   lein run -in ":name :street :number :city :area" -out ":name has the following geodata :lat :lng" -query ":street, :number, :area, :city - Brasil" -s my.csv
+    lein run -in ":name :street :number :city :area" -out ":name has the following geodata :lat :lng" -query ":street, :number, :area, :city - Brasil" -s my.csv
+
+This will generate a second file with the following content:
+
+    Shopping Ibirapuera has the following geodata -23.60972690 -46.66777130
+    Shopping Barra has the following geodata -12.98904470 -38.50801550
+
 
 It works like this: 
    
