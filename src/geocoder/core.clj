@@ -12,17 +12,18 @@
   (:use [clojure-csv.core :only [parse-csv]]
         [clojure.tools.cli :only [cli]]
         [clojure.java.io :only [reader writer]]
+        [clojure.string :only [replace]]
         [clojure.algo.monads :only [domonad maybe-m]])
+  (:refer-clojure :exclude [replace])
   (:gen-class))
 
 (defn build-req
   "Builds google API request"
-  [address]
-	(.getGeocoderRequest 
+  [parse-query address]
+	(.getGeocoderRequest
      (doto (new GeocoderRequestBuilder)
       ;(.setLocation (LatLng. (:lat address) (:lng address)))
-
-      (.setAddress (format "%s, %s, %s - %s, brasil" (:street address) (:number address) (:locality address) (:uf address)))
+      (.setAddress (parse-query address))
       (.setLanguage "pt_BR"))))
 
 (defn goo-gcf
@@ -63,9 +64,9 @@
 (defn geocode
 	"Geocode function itsel. Builds a request and return back the 
   result and processin gitem tuple."
-  [gcf i]
+  [gcf q i]
   (Thread/sleep (-> (rand-int 3) (+ 1) (* 1000))) ;; google often drop serial requests
-  (let [req (build-req i)
+  (let [req (build-req q i)
         response (gcf req)]
        [response i]))
 
@@ -73,8 +74,9 @@
 	"Converts a CSV line to a map"
   [fields line]
 
-  (let [mapper-full (map-indexed vector fields)
-        mapper-valid (filter #(not (= '_ (second %))) mapper-full)]
+  (let [fields- (map second (re-seq #"(?<!\\):(\w+)|\_" fields))
+        mapper-full (map-indexed #(vector %1 (keyword %2)) fields-)
+        mapper-valid (filter second  mapper-full)]
     (apply merge (map #(hash-map (second %) (nth line (first %))) mapper-valid))))
 
 (defn write-output
@@ -84,21 +86,27 @@
     (doseq [i content]
       (if i (do
         (println "Writing " i)
-        (.write w i))))))
+        (.write w i)
+        (.newLine w))))))
 
-(defn outputer [o]
-  (fn [result]
-    (if (:err result)
-      (:err result)
-      (apply format (first o) (flatten (map #(get result %) (second o)))))))
+(defn prepared-line-parser [^String line]
+  (fn [variables]
+      (loop [out-keys (map second (re-seq #"(?<!\\):(\w+)" line)) output line]
+       (if (seq out-keys)
+         (let [current-key (first out-keys)
+               replace-val (str ((keyword current-key) variables))
+               replace-str (re-pattern (str ":" current-key))]
+          (recur (rest out-keys) (replace output replace-str replace-val)))
+         output))))
 
 (defn -main
   [& args]
 	(let [gc (new Geocoder)
         [opts args banner]
-             (cli args ["-i" "--in-fields" "A map that describes how to thread each parsed field: [_ :city :name setreet _ _ :id]." :parse-fn #(read-string %)]
-                       ["-o" "--out-format" "A map that will be written to a new csv file appended with lat and lng: [\"%s,%s\" [:id :lat :lng]" :parse-fn #(read-string %)]
-                       ["-d" "--delimiter" "A csv delimiter. Defaults to ," :default \, :parse-fn #(first (read-string %))]
+             (cli args ["-in" "--in-fields" "A string that describes how to mapp each parsed field: \"_ :city :name setreet _ _ :id\""]
+                       ["-out" "--out-format" "A string that be written to the output file. :lat and :lng are also available: \":id, :lat, :ln\""]
+                       ["-query" "--maps-query" "The query that will be actually submitted to google maps"]
+                       ["-d" "--delimiter" "A csv delimiter. Defaults to ," :default \, :parse-fn #(first  %)]
                        ["-h" "--help" "Show this help." :default false :flag true]
                        ["-t" "--target" "Target file." :default "./geo-target"]
                        ["-s" "--source" "Target file." :default "./geo-source"]
@@ -108,7 +116,7 @@
         (System/exit 0))
       (->> (parse-csv (reader (:source opts)) :delimiter (:delimiter opts))
            (pmap #(to-geodata (:in-fields opts) %))
-           (pmap #(geocode (goo-gcf gc) %))
-           (pmap #(gen-result (outputer (:out-format opts)) %))
+           (pmap #(geocode (goo-gcf gc) (prepared-line-parser (:maps-query opts)) %))
+           (pmap #(gen-result (prepared-line-parser (:out-format opts)) %))
            (write-output (:target opts)))["-h" "--help" "Show this help." :default false :flag true])
    (System/exit 0))
