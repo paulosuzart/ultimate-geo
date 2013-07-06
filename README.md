@@ -52,9 +52,9 @@ Some times there are not enough information to geocode, so Ultimate Geo will put
 Todo
 ====
 
-    . Make input mapping easier passing just the keywords. OK
-    . Make contry as a parameter. OK
-    . Make out-format easier to write like: -o ":id,:lat,:lng", or -o ":id-latitude-:lat-lingitude:lng". instead of providing two arguments to format the output. OK
-    . Add the possibility to also return zip code
-    . Upgrade client to use Google Geocode V3
-    . Validate `output-format` according to `in-fields`. This will avoid exceptions and wrong usage
+   . Make input mapping easier passing just the keywords. OK
+   . Make contry as a parameter. OK
+   . Make out-format easier to write like: -o ":id,:lat,:lng", or -o ":id-latitude-:lat-lingitude:lng". instead of providing two arguments to format the output. OK
+   . Add the possibility to also return zip code
+   . Upgrade client to use Google Geocode V3
+   . Validate `output-format` according to `in-fields`. This will avoid exceptions and wrong usage

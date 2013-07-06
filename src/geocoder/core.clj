@@ -1,8 +1,3 @@
-;; Autor: Paulo Suzart
-;; This code reads a CSV file with a given format and then
-;; talks to google to get its route name and generage a SQL output
-;; just lein run it. No args to the main.
-
 (ns geocoder.core
 	(import com.google.code.geocoder.Geocoder)
 	(import com.google.code.geocoder.GeocoderRequestBuilder)
@@ -22,7 +17,6 @@
   [parse-query address]
 	(.getGeocoderRequest
      (doto (new GeocoderRequestBuilder)
-      ;(.setLocation (LatLng. (:lat address) (:lng address)))
       (.setAddress (parse-query address))
       (.setLanguage "pt_BR"))))
 
@@ -31,10 +25,10 @@
   [gc]
   (fn [req] (.geocode gc req)))
 
-(defn glat [result]
+(defn- glat [result]
   (.getLat (.getLocation (.getGeometry result))))
 
-(defn glng [result]
+(defn- glng [result]
   (.getLng (.getLocation (.getGeometry result))))
 
 (defn is-useful
@@ -44,10 +38,6 @@
       useful))
 
 (defn gen-result
-	"Given a GeocodeResponse g and a processing item i, emits
-  the needed SQL (gen-sql) or information about the failure.
-  Failures are written as commented SQL statements
-  "
   [o [response i]]
   (if (= "OK" (.value (.getStatus response)))
     (or
@@ -58,8 +48,8 @@
           lat (glat valid-result)
           lng (glng valid-result)]
             (o (merge i {:lat lat :lng lng})))
-      (o (merge i {:lat "unavailable" :lng "unavailable"})) ; (format "--Unable to find useful information for %s\n" (:id i))})))
-    (o (merge i {:lat "retry" :lng "retry"}))))) ;(format "--Unable to geocode %s due to %s\n" (:id i) (.value (.getStatus response)))}))))
+      (o (merge i {:lat "unavailable" :lng "unavailable"}))
+    (o (merge i {:lat "retry" :lng "retry"})))))
 
 (defn geocode
 	"Geocode function itsel. Builds a request and return back the 
@@ -70,7 +60,7 @@
         response (gcf req)]
        [response i]))
 
-(defn to-geodata
+(defn parse-in-fields
 	"Converts a CSV line to a map"
   [fields line]
 
@@ -80,7 +70,6 @@
     (apply merge (map #(hash-map (second %) (nth line (first %))) mapper-valid))))
 
 (defn write-output
-	"Takes the seq of geocoded data and writes to a predefined file. updates.sql"
   [target content]
   (with-open [w (writer target)]
     (doseq [i content]
@@ -99,9 +88,24 @@
           (recur (rest out-keys) (replace output replace-str replace-val)))
          output))))
 
+(defn process-input [opts]
+  (let [{:keys [source
+               target
+               delimiter
+               maps-query
+               out-format
+               in-fields]} opts]
+     (->> (parse-csv (reader source) :delimiter delimiter)
+          (pmap #(parse-in-fields in-fields %))
+          (pmap #(geocode (goo-gcf (new Geocoder)) (prepared-line-parser maps-query) %))
+          (pmap #(gen-result (prepared-line-parser out-format) %))
+          (write-output target))
+     (System/exit 0)))
+
+
 (defn -main
   [& args]
-	(let [gc (new Geocoder)
+	(let [
         [opts args banner]
              (cli args ["-in" "--in-fields" "A string that describes how to mapp each parsed field: \"_ :city :name setreet _ _ :id\""]
                        ["-out" "--out-format" "A string that be written to the output file. :lat and :lng are also available: \":id, :lat, :ln\""]
@@ -114,9 +118,5 @@
       (when (:help opts)
         (println banner)
         (System/exit 0))
-      (->> (parse-csv (reader (:source opts)) :delimiter (:delimiter opts))
-           (pmap #(to-geodata (:in-fields opts) %))
-           (pmap #(geocode (goo-gcf gc) (prepared-line-parser (:maps-query opts)) %))
-           (pmap #(gen-result (prepared-line-parser (:out-format opts)) %))
-           (write-output (:target opts)))["-h" "--help" "Show this help." :default false :flag true])
-   (System/exit 0))
+      (process-input opts)
+ ))

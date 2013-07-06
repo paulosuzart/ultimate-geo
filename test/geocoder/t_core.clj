@@ -7,11 +7,11 @@
 (def gc (new Geocoder))
 
 (facts "a csv line should be interpreted by the --in-fields vector and then generate the appropriated map"
-  (core/to-geodata ":name _ :age" ["Paulo" "Suzart" 20]) => {:name "Paulo" :age 20}
-  (core/to-geodata ":name _ :age" ["Agustinho" "Coelho" "37"]) => {:name "Agustinho" :age "37"}
-  (core/to-geodata ":age :gender" [21 "M"]) => {:age 21 :gender "M"}
-  (core/to-geodata ":city :uf :street" ["Sao jose" "SP" 2 3]) => {:city "Sao jose", :street 2, :uf "SP"} ;;works with more field but less mappings
-  (core/to-geodata ":id :street :number :bairro :locality :uf :cep :tel :fax :oa :categoria :site" ["()  -" "null" "null" "null" "null" "null" "null" "null" "null" "null" "null" "http://"]) =>
+  (core/parse-in-fields ":name _ :age" ["Paulo" "Suzart" 20]) => {:name "Paulo" :age 20}
+  (core/parse-in-fields ":name _ :age" ["Agustinho" "Coelho" "37"]) => {:name "Agustinho" :age "37"}
+  (core/parse-in-fields ":age :gender" [21 "M"]) => {:age 21 :gender "M"}
+  (core/parse-in-fields ":city :uf :street" ["Sao jose" "SP" 2 3]) => {:city "Sao jose", :street 2, :uf "SP"} ;;works with more field but less mappings
+  (core/parse-in-fields ":id :street :number :bairro :locality :uf :cep :tel :fax :oa :categoria :site" ["()  -" "null" "null" "null" "null" "null" "null" "null" "null" "null" "null" "http://"]) =>
        {:bairro "null", :categoria "null", :cep "null", :fax "null", :id "()  -", :locality "null", :number "null", :oa "null", :site "http://", :street "null", :tel "null", :uf "null"}
 )
 

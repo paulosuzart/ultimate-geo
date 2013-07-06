@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
-				         [com.google.code.geocoder-java/geocoder-java "0.11"]
+				         [com.google.code.geocoder-java/geocoder-java "0.15"]
                  [clojure-csv/clojure-csv "2.0.0-alpha1"]
                  [org.clojure/algo.monads "0.1.0"]
                  [org.clojure/tools.cli "0.2.2"]]
