@@ -89,6 +89,7 @@
          output))))
 
 (defn process-input [opts]
+  (println opts)
   (let [{:keys [source
                target
                delimiter
@@ -109,7 +110,7 @@
         [opts args banner]
              (cli args ["-in" "--in-fields" "A string that describes how to mapp each parsed field: \"_ :city :name setreet _ _ :id\""]
                        ["-out" "--out-format" "A string that be written to the output file. :lat and :lng are also available: \":id, :lat, :ln\""]
-                       ["-query" "--maps-query" "The query that will be actually submitted to google maps"]
+                       ["-query" "--maps-query" "The query that will be actually submitted to google maps. `-in` used if not supplied"]
                        ["-d" "--delimiter" "A csv delimiter. Defaults to ," :default \, :parse-fn #(first  %)]
                        ["-h" "--help" "Show this help." :default false :flag true]
                        ["-t" "--target" "Target file." :default "./geo-target"]
@@ -118,5 +119,8 @@
       (when (:help opts)
         (println banner)
         (System/exit 0))
-      (process-input opts)
+      (process-input
+        (if (not (:maps-query opts))
+            (assoc opts :maps-query (:in-fields opts))
+            opts))
  ))

@@ -12,7 +12,7 @@ Run it with `lein run -h` and you'll see:
     --------               -------       ----                                                                                            
     -in, --in-fields                     A string that describes how to mapp each parsed field: "_ :city :name setreet _ _ :id"         
     -out, --out-format                   A string that be written to the output file. :lat and :lng are also available: ":id, :lat, :ln"
-    -query, --maps-query                 The query that will be actually submitted to google maps                                        
+    -query, --maps-query                 The query that will be actually submitted to google maps. `-in` used if not supplied                                        
     -d, --delimiter        ,             A csv delimiter. Defaults to ,                                                                  
     -h, --no-help, --help  false         Show this help.                                                                                 
     -t, --target           ./geo-target  Target file.                                                                                    
