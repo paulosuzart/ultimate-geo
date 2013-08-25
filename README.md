@@ -39,13 +39,12 @@ This will generate a second file with the following content:
 
 It works like this: 
    
-   1. Maps every column by position to the specified in-fields variables
-   1. For each line, replaces the -query with the appropriate variables and submit it to google
-   1. After geocoding, writes the -out to the -t file. Providing two more variables that are `:lat` and `:lng`
-
-Here some diagrama to help:
-
 ![ultimate-geo](http://github.com/paulosuzart/ultimate-geo/raw/master/ultimate.png)
+
+   1. Maps every column by position to the specified `in-fields` variables
+   1. For each line, replaces the `-query` with the appropriate variables and submit it to google
+   1. After geocoding, writes the `-out` to the `-t` file. Providing two more variables that are `:lat` and `:lng`
+
 
 Notice the column maps works just like variables in HQL queries.
 
