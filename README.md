@@ -43,6 +43,10 @@ It works like this:
    1. For each line, replaces the -query with the appropriate variables and submit it to google
    1. After geocoding, writes the -out to the -t file. Providing two more variables that are `:lat` and `:lng`
 
+Here some diagrama to help:
+
+![ultimate-geo](http://github.com/paulosuzart/ultimate-geo/raw/master/ultimate.png)
+
 Notice the column maps works just like variables in HQL queries.
 
 Mapping `_` for a input column, means that it is not important, so you are not going to use them in the output. You need to map them though, so the input fields are correctly mapped according to their order.
@@ -52,10 +56,10 @@ Some times there are not enough information to geocode, so Ultimate Geo will put
 Todo
 ====
 
-   * Make input mapping easier passing just the keywords. *OK*
-   * Make contry as a parameter. *OK*
-   * Make out-format easier to write like: -o ":id,:lat,:lng", or -o ":id-latitude-:lat-lingitude:lng". instead of providing two arguments to format the output. *OK*
+   * Make input mapping easier passing just the keywords. **OK**
+   * Make contry as a parameter. **OK**
+   * Make out-format easier to write like: -o ":id,:lat,:lng", or -o ":id-latitude-:lat-lingitude:lng". instead of providing two arguments to format the output. **OK**
    * Add the possibility to also return zip code
-   * Upgrade client to use Google Geocode V3 *OK*
+   * Upgrade client to use Google Geocode V3 **OK**
    * Validate `output-format` according to `in-fields`. This will avoid exceptions and wrong usage
 
