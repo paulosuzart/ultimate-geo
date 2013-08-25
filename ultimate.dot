@@ -3,8 +3,8 @@ digraph structs {
     line [label=" LINE |<f0> Shopping Ibirapuera|<f1> Av. Ibirapuera|<f2> 3103| <f3> São Paulo |<f4> Moema"];
     infields  [label=" -IN | <f0> :name|<f1> :street|<f2> :number| <f3> :city |<f4> :area"];
     extrafields [label="AVAILABLE\nAFTER\nGEOCODE |<f0> :lat |<f1> :lng"];
-    outfields  [label="-OUT |<f0> :name|<f1> :street|<f2> :number| <f3> :city |<f4> :area |<f5> :lat |<f6> :lng"];
-    lineout [label="GENERATED\nLINE | <f0> Shopping Ibirapuera|<f1> Av. Ibirapuera|<f2> 3103| <f3> São Paulo |<f4> Moema|<f5> -23.60972690|<f6> -46.66777130"];
+    outfields  [label="-OUT |<f0> :name|<f1>  has the following geodata | <f2> :lat |<f3> :lng"];
+    lineout [label="GENERATED\nLINE | <f0> Shopping Ibirapuera|<f1> has the following geodata |<f2> -23.60972690|<f3> -46.66777130"];
 
     line:f0 -> infields:f0;
     line:f1 -> infields:f1;
@@ -13,20 +13,12 @@ digraph structs {
     line:f4 -> infields:f4;
 
     infields:f0 -> outfields:f0;
-    infields:f1 -> outfields:f1;
-    infields:f2 -> outfields:f2;
-    infields:f3 -> outfields:f3;
-    infields:f4 -> outfields:f4;
- 
+
 
     outfields:f0 -> lineout:f0;
-    outfields:f1 -> lineout:f1;
+    extrafields:f0 -> outfields:f2;
+    extrafields:f1 -> outfields:f3;
     outfields:f2 -> lineout:f2;
     outfields:f3 -> lineout:f3;
-    outfields:f4 -> lineout:f4;
-    extrafields:f0 -> outfields:f5;
-    extrafields:f1 -> outfields:f6;
-    outfields:f5 -> lineout:f5;
-    outfields:f6 -> lineout:f6;
 
 }

@@ -27,7 +27,7 @@ Suppose you have the given csv file:
 Just call the ultimate geocoder like this:
 
     lein run -in ":name :street :number :city :area" \
-             -out ":name, :street, :number, :city, :area, :lat, :lng" \
+             -out ":name Shopping Ibirapuera has the following geodata :lat, :lng" \
              -query ":street, :number, :area, :city - Brasil" \ 
              -s my.csv
 
