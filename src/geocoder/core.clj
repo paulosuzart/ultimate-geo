@@ -46,8 +46,10 @@
   (let [useful (some types (.getTypes result))]
       useful))
 
+; Wraps `is-useful` with required types for components
 (def is-useful-component (partial is-useful #{"postal_code"}))
 
+; Wraps `is-useful` with required types for results
 (def is-useful-result (partial is-useful #{"street_address" "route"}))                                     
 
 
@@ -89,6 +91,7 @@
     (apply merge (map #(hash-map (second %) (nth line (first %))) mapper-valid))))
 
 (defn write-output
+  "Actually writes the results to new line in the output file"
   [target content]
   (with-open [w (writer target)]
     (doseq [i content]
@@ -97,8 +100,11 @@
         (.write w i)
         (.newLine w))))))
 
-(defn prepared-line-parser [^String line]
-  (fn [variables]
+(defn prepared-line-parser
+  "Transforms a kindo of 'prepared statement line' into a function that given a map,
+  replaces the map keys in the `line` by `variables` values"
+ [^String line]
+ (fn [variables]
       (loop [out-keys (map second (re-seq #"(?<!\\):(\w+)" line)) output line]
        (if (seq out-keys)
          (let [current-key (first out-keys)
@@ -107,7 +113,9 @@
           (recur (rest out-keys) (replace output replace-str replace-val)))
          output))))
 
-(defn process-input [opts]
+(defn process-input 
+  "Main function that chains the process of geocoding the input file and writing to the output one"
+  [opts]
   (println opts)
   (let [{:keys [source
                target
