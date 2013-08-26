@@ -2,13 +2,13 @@
 	(import com.google.code.geocoder.Geocoder)
 	(import com.google.code.geocoder.GeocoderRequestBuilder)
 	(import com.google.code.geocoder.model.LatLng)
-  	(import com.google.code.geocoder.model.GeocoderStatus)
-  	(import com.google.code.geocoder.model.GeocoderResultType)
+ 	(import com.google.code.geocoder.model.GeocoderStatus)
+ 	(import com.google.code.geocoder.model.GeocoderAddressComponent)
+ 	(import com.google.code.geocoder.model.GeocoderResultType)
   (:use [clojure-csv.core :only [parse-csv]]
         [clojure.tools.cli :only [cli]]
         [clojure.java.io :only [reader writer]]
         [clojure.string :only [replace]]
-        [clojure.algo.monads :only [domonad maybe-m]])
   (:refer-clojure :exclude [replace])
   (:gen-class))
 
@@ -25,31 +25,50 @@
   [gc]
   (fn [req] (.geocode gc req)))
 
-(defn- glat [result]
+(defn- gzip
+  "Gets the zip code from the results"
+  [^GeocoderAddressComponent component]
+  (.getShortName component))
+
+
+(defn- glat 
+  "Gets the latitude from result"
+  [result]
   (.getLat (.getLocation (.getGeometry result))))
 
 (defn- glng [result]
+  "Gets the longitude from results"
   (.getLng (.getLocation (.getGeometry result))))
 
 (defn is-useful
 	"Checks if a given GeocodeResponde or AddresComponent are useful"
-  [t]
-    (let [useful (some #{"street_address" "route"} (.getTypes t))]
+  [types result]
+  (let [useful (some types (.getTypes result))]
       useful))
 
+(def is-useful-component (partial is-useful #{"postal_code"}))
+
+(def is-useful-result (partial is-useful #{"street_address" "route"}))                                     
+
+
 (defn gen-result
-  [o [response i]]
+  "Google returns sometimes lots of results for the same query.
+  This function will find the GeocoderResult that owns `stree_address` types and
+  then grab its data"
+  [outputter [response in-data]]
   (if (= "OK" (.value (.getStatus response)))
-    (or
-      (domonad maybe-m
-         [results (.getResults response)
-		      valid-result (first (filter is-useful results))
-		      valid-component (first (filter is-useful (.getAddressComponents valid-result)))
-          lat (glat valid-result)
-          lng (glng valid-result)]
-            (o (merge i {:lat lat :lng lng})))
-      (o (merge i {:lat "unavailable" :lng "unavailable"}))
-    (o (merge i {:lat "retry" :lng "retry"})))))
+    (let [results (.getResults response)
+          geo (transient {:lat "unavailable" :lng "unavailable" :zip "unavailable"})]
+
+      (when-let [valid-result (first (filter is-useful-result results))]
+        (assoc! geo :lat (glat valid-result) :lng (glng valid-result))
+        
+        (when-let [valid-component (first (filter is-useful-component (.getAddressComponents valid-result)))]
+          (assoc! geo :zip (gzip valid-component))))
+
+      (outputter (merge in-data (persistent! geo))))
+
+    (outputter (merge in-data {:lat "retry" :lng "retry" :zip "retry"}))))
 
 (defn geocode
 	"Geocode function itsel. Builds a request and return back the 

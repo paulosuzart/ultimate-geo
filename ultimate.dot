@@ -2,7 +2,7 @@ digraph structs {
     node [shape=record];
     line [label=" LINE |<f0> Shopping Ibirapuera|<f1> Av. Ibirapuera|<f2> 3103| <f3> São Paulo |<f4> Moema"];
     infields  [label=" -IN | <f0> :name|<f1> :street|<f2> :number| <f3> :city |<f4> :area"];
-    extrafields [label="AVAILABLE\nAFTER\nGEOCODE |<f0> :lat |<f1> :lng"];
+    extrafields [label="AVAILABLE\nAFTER\nGEOCODE |<f0> :lat |<f1> :lng |<f2> :zip"];
     outfields  [label="-OUT |<f0> :name|<f1>  has the following geodata | <f2> :lat |<f3> :lng"];
     lineout [label="GENERATED\nLINE | <f0> Shopping Ibirapuera|<f1> has the following geodata |<f2> -23.60972690|<f3> -46.66777130"];
 
