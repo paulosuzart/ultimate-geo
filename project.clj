@@ -1,5 +1,5 @@
 (defproject geocoder "ultimate-geo"
-  :description "gets the right street name"
+  :description "Takes any .csv input, geocodes it and writes to any output file"
   :url "http://paulosuzart.github.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
