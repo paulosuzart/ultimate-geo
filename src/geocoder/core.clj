@@ -8,7 +8,7 @@
   (:use [clojure-csv.core :only [parse-csv]]
         [clojure.tools.cli :only [cli]]
         [clojure.java.io :only [reader writer]]
-        [clojure.string :only [replace]]
+        [clojure.string :only [replace]])
   (:refer-clojure :exclude [replace])
   (:gen-class))
 

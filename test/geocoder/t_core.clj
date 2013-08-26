@@ -44,12 +44,12 @@
 (facts "Generate appropriate result from a geocode request"
 
      
-  (let [o (core/prepared-line-parser ":id, :lat, :lng")]
+ (let [o (core/prepared-line-parser ":id, :lat, :lng")]
        (core/gen-result o
          (core/geocode (core/goo-gcf gc) default-query
               {:bairro "null", :categoria "null", :cep "null", :fax "null", :id "()  -", :locality "null", :number "null", :oa "null", :site "http://", :street "null", :tel "null", :uf "null"}))=> "()  -, retry, retry")
 
-  (let [o (core/prepared-line-parser ":id, :lat, :lng")]
+ (let [o (core/prepared-line-parser ":id, :lat, :lng")]
        (core/gen-result o
          (core/geocode (core/goo-gcf gc) default-query
               {:uf "SP" :street "Alameda dos Nhambiquaras" :number "1645" :locality "São Paulo" :id "POI"})) => "POI, -23.6121401, -46.6641445")
