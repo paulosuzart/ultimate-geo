@@ -39,7 +39,7 @@ This will generate a second file with the following content:
 
 It works like this: 
    
-![ultimate-geo](http://github.com/paulosuzart/ultimate-geo/raw/master/ultimate.png)
+![ultimate-geo](https://raw.githubusercontent.com/paulosuzart/ultimate-geo/master/ultimate.png)
 
    1. Maps every column by position to the specified `in-fields` variables
    1. For each line, replaces the `-query` with the appropriate variables and submit it to google
