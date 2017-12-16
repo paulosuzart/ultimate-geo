@@ -2,7 +2,9 @@ Intro
 =====
 Ultimate Geo is the final definitive geocoding app. The motivation behind it was:
 We have different CSVs full of address in the most crazy combinations. Some of them has the `street`, `number`, `site`, `phone`. Other CSVs have data in a different order, etc. This led us to keep creating (actually adjusting) our geocode scripts. Now it is over!
- 
+
+**WARNING**: Google keeps changing lat/lng to improve precision so tests over time will fatally fail.
+
 Usage
 =====
 Run it with `lein run -h` and you'll see:

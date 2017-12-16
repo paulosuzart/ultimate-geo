@@ -1,10 +1,10 @@
 (ns geocoder.core
-	(import com.google.code.geocoder.Geocoder)
-	(import com.google.code.geocoder.GeocoderRequestBuilder)
-	(import com.google.code.geocoder.model.LatLng)
- 	(import com.google.code.geocoder.model.GeocoderStatus)
- 	(import com.google.code.geocoder.model.GeocoderAddressComponent)
- 	(import com.google.code.geocoder.model.GeocoderResultType)
+	(:import com.google.code.geocoder.Geocoder)
+	(:import com.google.code.geocoder.GeocoderRequestBuilder)
+	(:import com.google.code.geocoder.model.LatLng)
+ 	(:import com.google.code.geocoder.model.GeocoderStatus)
+ 	(:import com.google.code.geocoder.model.GeocoderAddressComponent)
+ 	(:import com.google.code.geocoder.model.GeocoderResultType)
   (:use [clojure-csv.core :only [parse-csv]]
         [clojure.tools.cli :only [cli]]
         [clojure.java.io :only [reader writer]]

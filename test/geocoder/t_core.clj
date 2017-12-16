@@ -1,7 +1,6 @@
 (ns geocoder.t-core
-	(import com.google.code.geocoder.Geocoder)
-	
-  (:use midje.sweet)
+	(:import com.google.code.geocoder.Geocoder)
+	(:use midje.sweet)
   (:require [geocoder.core :as core]))
 
 (def gc (new Geocoder))
@@ -47,12 +46,12 @@
  (let [o (core/prepared-line-parser ":id, :lat, :lng")]
        (core/gen-result o
          (core/geocode (core/goo-gcf gc) default-query
-              {:bairro "null", :categoria "null", :cep "null", :fax "null", :id "()  -", :locality "null", :number "null", :oa "null", :site "http://", :street "null", :tel "null", :uf "null"}))=> "()  -, retry, retry")
+              {:bairro "null", :categoria "null", :cep "null", :fax "null", :id "()  -", :locality "null", :number "null", :oa "null", :site "http://", :street "null", :tel "null", :uf "null"}))=> "()  -, unavailable, unavailable")
 
  (let [o (core/prepared-line-parser ":id, :lat, :lng")]
        (core/gen-result o
          (core/geocode (core/goo-gcf gc) default-query
-              {:uf "SP" :street "Alameda dos Nhambiquaras" :number "1645" :locality "São Paulo" :id "POI"})) => "POI, -23.6121401, -46.6641445")
+              {:uf "SP" :street "Alameda dos Nhambiquaras" :number "1645" :locality "São Paulo" :id "POI"})) => "POI, -23.6121706, -46.664088")
 
  (let [o (core/prepared-line-parser ":id, :lat, :lng")]
        (core/gen-result o
@@ -63,19 +62,19 @@
         query (core/prepared-line-parser ":address")]
        (core/gen-result o
           (core/geocode (core/goo-gcf gc) query
-              {:address "Alameda Santos, 2395 - 01419-002 - Jardim Paulista - São Paulo - SP"})) => "01419-002 -23.5696946 -46.649367")
+              {:address "Alameda Santos, 2395 Jardim Paulista, São Paulo"})) => "01419-002 -23.5696946 -46.649367")
        
   (let [o (core/prepared-line-parser ":zip :lat :lng")
         query (core/prepared-line-parser ":address")]
        (core/gen-result o
           (core/geocode (core/goo-gcf gc) query
-              {:address "32, Carrera 78 # 2-35, Medellín, Antioquia, Colombia"})) => "unavailable 6.2126334 -75.60095070000001")
+              {:address "Carrera 78 #2-35, Medellín, Antioquia"})) => "unavailable 6.2126334 -75.60095070000001")
 
   (let [o (core/prepared-line-parser ":zip :lat :lng")
         query (core/prepared-line-parser ":address")]
        (core/gen-result o
           (core/geocode (core/goo-gcf gc) query
-              {:address "Rua Boa Vista Brotas, 28, Engenho Velho de Brotas, Salvador - BA"})) => "40240-340 -12.9828452 -38.5000983"))
+              {:address "Rua Boa Vista Brotas, 28, Engenho Velho de Brotas, Salvador - BA"})) => "40243 -12.9850495 -38.5036799"))
        
 
 
