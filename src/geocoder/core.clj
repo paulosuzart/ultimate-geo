@@ -9,6 +9,7 @@
         [clojure.tools.cli :only [cli]]
         [clojure.java.io :only [reader writer]]
         [clojure.string :only [replace]])
+  (:require [clojure.tools.logging :as log])
   (:refer-clojure :exclude [replace])
   (:gen-class))
 
@@ -54,14 +55,13 @@
 
 
 (defn gen-result
-  "Google returns sometimes lots of results for the same query.
+  "Google returns sometimes lots of re(:require [clojure.tools.logging :as log])sults for the same query.
   This function will find the GeocoderResult that owns `stree_address` types and
   then grab its data"
   [outputter [response in-data]]
   (if (= "OK" (.value (.getStatus response)))
     (let [results (.getResults response)
           geo (transient {:lat "unavailable" :lng "unavailable" :zip "unavailable"})]
-
       (when-let [valid-result (first (filter is-useful-result results))]
         (assoc! geo :lat (glat valid-result) :lng (glng valid-result))
         
@@ -70,7 +70,9 @@
 
       (outputter (merge in-data (persistent! geo))))
 
-    (outputter (merge in-data {:lat "retry" :lng "retry" :zip "retry"}))))
+    (do 
+      (log/warn (.value (.getStatus response)))
+      (outputter (merge in-data {:lat "retry" :lng "retry" :zip "retry"})))))
 
 (defn geocode
 	"Geocode function itsel. Builds a request and return back the 
@@ -96,12 +98,12 @@
   (with-open [w (writer target)]
     (doseq [i content]
       (if i (do
-        (println "Writing " i)
+        (log/info "Writing " i)
         (.write w i)
         (.newLine w))))))
 
 (defn prepared-line-parser
-  "Transforms a kindo of 'prepared statement line' into a function that given a map,
+  "Transforms a kind of 'prepared statement line' into a function that given a map,
   replaces the map keys in the `line` by `variables` values"
  [^String line]
  (fn [variables]
@@ -116,7 +118,7 @@
 (defn process-input 
   "Main function that chains the process of geocoding the input file and writing to the output one"
   [opts]
-  (println opts)
+  (log/info opts)
   (let [{:keys [source
                target
                delimiter
@@ -136,7 +138,7 @@
 	(let [
         [opts args banner]
              (cli args ["-in" "--in-fields" "A string that describes how to mapp each parsed field: \"_ :city :name setreet _ _ :id\""]
-                       ["-out" "--out-format" "A string that be written to the output file. :lat and :lng are also available: \":id, :lat, :ln\""]
+                       ["-out" "--out-format" "A string that be written to the output file. :lat and :lng are also available: \":id, :lat, :lng\""]
                        ["-query" "--maps-query" "The query that will be actually submitted to google maps. `-in` used if not supplied"]
                        ["-d" "--delimiter" "A csv delimiter. Defaults to ," :default \, :parse-fn #(first  %)]
                        ["-h" "--help" "Show this help." :default false :flag true]

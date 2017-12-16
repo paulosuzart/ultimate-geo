@@ -6,6 +6,8 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
 				         [com.google.code.geocoder-java/geocoder-java "0.16"]
                  [clojure-csv/clojure-csv "2.0.2"]
-                 [org.clojure/tools.cli "0.2.2"]]
+                 [org.clojure/tools.cli "0.2.2"]
+                 [org.clojure/tools.logging "0.4.0"]
+                 [ch.qos.logback/logback-classic "1.1.3"]]
   :profiles {:dev {:dependencies [[midje "1.9.0"]]}}
   :main geocoder.core)
